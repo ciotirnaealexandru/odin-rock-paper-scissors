@@ -59,7 +59,7 @@ function getUserChoice() {
 }
 
 async function playRound(roundNumber){
-    round.textContent = "Round: " + roundNumber;
+    round.textContent = "Round: " + roundNumber + "/5";
 
     let userChoice = await getUserChoice();
     let computerChoice = getComputerChoice();
@@ -83,7 +83,7 @@ async function playRound(roundNumber){
 }
 
 async function playGame(){
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 5; i++) {
         resetComputerChoice();
         await playRound(i+1);
     }
