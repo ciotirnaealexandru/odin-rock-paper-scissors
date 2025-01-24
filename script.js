@@ -1,77 +1,98 @@
-function getComputerChoice(){
-    let randomNumber = Math.random();
-    if (randomNumber < 1/3)
-        return "Rock";
-    else if (randomNumber < 2/3)
-        return "Paper";
-    else
-        return "Scissors";
-}
+let user_rock = document.querySelector(".user-rock");
+let user_paper = document.querySelector(".user-paper");
+let user_scissors = document.querySelector(".user-scissors");
 
-function getUserChoice(roundNumber){
-    let answer = prompt("Round " + roundNumber + "! Choose Rock, Paper or Scissors:");
-    if(answer != "Rock" && answer != "Paper" && answer != "Scissors"){
-        alert("Please enter a valid input");
-        answer = getUserChoice(roundNumber);
-    }
-    return answer;
-}
+let computer_rock_image = document.querySelector(".computer-rock img");
+let computer_paper_image = document.querySelector(".computer-paper img");
+let computer_scissors_image = document.querySelector(".computer-scissors img");
 
 let userScore = 0;
+let userScore_container = document.querySelector(".user-score");
 let computerScore = 0;
+let computerScore_container = document.querySelector(".computer-score");
 
-function playRound(roundNumber){
-    let computerChoice = getComputerChoice();
-    let userChoice = getUserChoice(roundNumber);
-    alert("The Computer played " + computerChoice + "!");
+let round = document.querySelector(".round-number");
 
-    if(computerChoice == "Rock" && userChoice == "Scissors"){
-        computerScore++;
-        alert("The Computer won this round! Human: " + userScore + " Computer: " + computerScore);
-    }
-    if(computerChoice == "Rock" && userChoice == "Paper"){
-        userScore++;
-        alert("You won this round! Human: " + userScore + " Computer: " + computerScore);
-    }
-    if(computerChoice == "Rock" && userChoice == "Rock"){
-        alert("This round is a tie! Human: " + userScore + " Computer: " + computerScore);
-    }
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-    if(computerChoice == "Paper" && userChoice == "Rock"){
-        computerScore++;
-        alert("The Computer won this round! Human: " + userScore + " Computer: " + computerScore);
-    }
-    if(computerChoice == "Paper" && userChoice == "Scissors"){
-        userScore++;
-        alert("You won this round! Human: " + userScore + " Computer: " + computerScore);
-    }
-    if(computerChoice == "Paper" && userChoice == "Paper"){
-        alert("It's a tie! Human: " + userScore + " Computer: " + computerScore);
-    }
+function updateScore() {
+    userScore_container.textContent = "User: " + userScore;
+    computerScore_container.textContent = "Computer: " + computerScore;
+}
 
-    if(computerChoice == "Scissors" && userChoice == "Paper"){
-        computerScore++;
-        alert("The Computer won this round! Human: " + userScore + " Computer: " + computerScore);
+function resetComputerChoice(){
+    computer_rock_image.src = "images/question.png";
+    computer_paper_image.src = "images/question.png";
+    computer_scissors_image.src = "images/question.png";
+}
+
+function getComputerChoice(){
+    let randomNumber = Math.random();
+    if (randomNumber < 1/3) {
+        computer_rock_image.src = "images/rock.png";
+        return "Rock";
     }
-    if(computerChoice == "Scissors" && userChoice == "Rock"){
-        userScore++;
-        alert("You won this round! Human: " + userScore + " Computer: " + computerScore);
+    else if (randomNumber < 2/3) {
+        computer_paper_image.src = "images/paper.png";
+        return "Paper";
     }
-    if(computerChoice == "Scissors" && userChoice == "Scissors"){
-        alert("It's a tie! Human: " + userScore + " Computer: " + computerScore);
+    else {
+        computer_scissors_image.src = "images/scissors.png";
+        return "Scissors";
     }
 }
 
-function playGame(){
-    alert("You are about to play a best out of 3 Rock Paper Scissors game!");
-    for (var i = 0; i < 3; i++)
-        playRound(i+1);
+function getUserChoice() {
+    return new Promise((resolve) => {
+        user_rock.addEventListener("click", () => {
+            resolve("Rock");
+        }, { once: true });
+        user_paper.addEventListener("click", () => {
+            resolve("Paper");
+        }, { once: true });
+        user_scissors.addEventListener("click", () => {
+            resolve("Scissors");
+        }, { once: true });
+    });
+}
+
+async function playRound(roundNumber){
+    round.textContent = "Round: " + roundNumber;
+
+    let userChoice = await getUserChoice();
+    let computerChoice = getComputerChoice();
+
+    if(computerChoice == "Rock" && userChoice == "Scissors")
+        computerScore++;
+    if(computerChoice == "Rock" && userChoice == "Paper")
+        userScore++;
+    if(computerChoice == "Paper" && userChoice == "Rock")
+        computerScore++;
+    if(computerChoice == "Paper" && userChoice == "Scissors")
+        userScore++;
+    if(computerChoice == "Scissors" && userChoice == "Paper")
+        computerScore++;
+    if(computerChoice == "Scissors" && userChoice == "Rock")
+        userScore++;
+
+    updateScore();
+
+    await delay(2000);
+}
+
+async function playGame(){
+    for (var i = 0; i < 3; i++) {
+        resetComputerChoice();
+        await playRound(i+1);
+    }
     if (userScore < computerScore)
-        alert("The Computer won!");
+        round.textContent = "The Computer won!";
     else if( userScore == computerScore)
-        alert("It's a tie!");
+        round.textContent = "It's a 👔!";
     else
-        alert("You won!");
+        round.textContent = "You won!"
 }
 
 playGame();
